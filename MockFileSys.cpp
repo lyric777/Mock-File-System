@@ -1,4 +1,4 @@
-// MockFileSys.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// MockFileSys.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -17,41 +17,41 @@ using namespace std;
 typedef struct
 {
 	char filename[20];
-	int type;//0Ä¿Â¼£¬1ÎÄ¼ş
-	int mode; // ÎÄ¼şÈ¨ÏŞ0 - readonly;  1 - writeonly;  2 - read / write
-	int length;//ÎÄ¼ş³¤¶È(ÒÔ×Ö½ÚÊı¼ÆËã)  
-	int addr;//Èç¹ûÎªÎÄ¼ş£¬ÔòÊÇDBÏÂ±ê£»Èç¹ûÎªÎÄ¼ş¼Ğ£¬ÎŞÒâÒå-1
-	int parent;//ÉÏÒ»¼¶Ä¿Â¼£¬¸ùÄ¿Â¼-1£¬ÎÄ¼ş-1
-	char day[11];//¶àÒ»¸ö\0
+	int type;//0ç›®å½•ï¼Œ1æ–‡ä»¶
+	int mode; // æ–‡ä»¶æƒé™0 - readonly;  1 - writeonly;  2 - read / write
+	int length;//æ–‡ä»¶é•¿åº¦(ä»¥å­—èŠ‚æ•°è®¡ç®—)  
+	int addr;//å¦‚æœä¸ºæ–‡ä»¶ï¼Œåˆ™æ˜¯DBä¸‹æ ‡ï¼›å¦‚æœä¸ºæ–‡ä»¶å¤¹ï¼Œæ— æ„ä¹‰-1
+	int parent;//ä¸Šä¸€çº§ç›®å½•ï¼Œæ ¹ç›®å½•-1ï¼Œæ–‡ä»¶-1
+	char day[11];//å¤šä¸€ä¸ª\0
 	char tim[6];
-}UFD;  //ÎÄ¼ş»òÄ¿Â¼   57B
+}UFD;  //æ–‡ä»¶æˆ–ç›®å½•   57B
 
 
 typedef struct
 {
-	int next_num;//ÏÂÒ»¸ö¿éºÅ£¨¿ÉÄÜ²»Á¬Ğø£©£¬Ã»ÓĞÏÂÒ»¿é-1
-	int is_data;//ÆôÓÃ»¹ÊÇ²»ÆôÓÃ
+	int next_num;//ä¸‹ä¸€ä¸ªå—å·ï¼ˆå¯èƒ½ä¸è¿ç»­ï¼‰ï¼Œæ²¡æœ‰ä¸‹ä¸€å—-1
+	int is_data;//å¯ç”¨è¿˜æ˜¯ä¸å¯ç”¨
 	char data[256];
 
-}DB;  //Êı¾İ¿é  Ò»Î¬Êı×é   264B
+}DB;  //æ•°æ®å—  ä¸€ç»´æ•°ç»„   264B
 
-//ÉùÃ÷
+//å£°æ˜
 extern int Headnum;
 extern int Middlenum;
-extern int presentdir;//µ±Ç°Ä¿Â¼
+extern int presentdir;//å½“å‰ç›®å½•
 extern UFD FileInput;
 extern DB DBInput;
 extern vector <UFD> FileInfo;
 extern vector<DB> FileDB;
 extern string path;
 
-//¶¨Òå
+//å®šä¹‰
 int Headnum;
 int Middlenum;
-int presentdir = -1;//´Ó¸ùÄ¿Â¼¿ªÊ¼
+int presentdir = -1;//ä»æ ¹ç›®å½•å¼€å§‹
 UFD FileInput;
 DB DBInput;
-vector <UFD> FileInfo;  //Ò»Î¬¶¯Ì¬Êı×é
+vector <UFD> FileInfo;  //ä¸€ç»´åŠ¨æ€æ•°ç»„
 vector<DB> FileDB;
 string path = "\\";
 
@@ -64,7 +64,7 @@ void initFiletoRom()
 	FILE *fd;
 	if ((fd = fopen("disk.txt", "r")) == NULL)
 	{
-		cout << "´ÅÅÌÖĞ¶ÁÈëÊ§°Ü£¡" << endl;
+		cout << "ç£ç›˜ä¸­è¯»å…¥å¤±è´¥ï¼" << endl;
 		return;
 	}
 
@@ -73,7 +73,7 @@ void initFiletoRom()
 	int ret;
 	alreadynum = 0;
 
-	//³õÊ¼»¯ÎÄ¼şĞÅÏ¢
+	//åˆå§‹åŒ–æ–‡ä»¶ä¿¡æ¯
 	for (int i = 0; i < Headnum; i++)
 	{
 		if ((ret = fscanf(fd, "%s %d %d %d %d %d %s %s", &FileInput.filename, &FileInput.type, &FileInput.mode, &FileInput.length, &FileInput.addr, &FileInput.parent, &FileInput.day, &FileInput.tim)) != -1)
@@ -84,12 +84,12 @@ void initFiletoRom()
 
 	}
 	alreadynum = 0;
-	char Tempbuf[256];  //Ò»¸öÎÄ¼ş¿é×î¶à256
+	char Tempbuf[256];  //ä¸€ä¸ªæ–‡ä»¶å—æœ€å¤š256
 	char c;
 	fscanf(fd, "%d", &Middlenum);
 	while (alreadynum < Middlenum)
 	{
-		memset(Tempbuf, 0, sizeof(Tempbuf));//È«²¿³õÊ¼»¯0
+		memset(Tempbuf, 0, sizeof(Tempbuf));//å…¨éƒ¨åˆå§‹åŒ–0
 		if ((ret = fscanf(fd, "%d %d", &DBInput.next_num, &DBInput.is_data)) != -1)
 		{
 			if (DBInput.is_data != -1)
@@ -111,7 +111,7 @@ void initFiletoRom()
 	fclose(fd);
 }
 
-void out_to_file()  //¸²¸ÇĞ´
+void out_to_file()  //è¦†ç›–å†™
 {
 	FILE* fd;
 	fd = fopen("disk.txt", "w");
@@ -138,7 +138,7 @@ void dir()
 {
 	int filenum, dirnum;
 	filenum = dirnum = 0;
-	cout << "\n XZL:" << path << " µÄÄ¿Â¼" << endl << endl;
+	cout << "\n XZL:" << path << " çš„ç›®å½•" << endl << endl;
 	if (presentdir != -1)
 	{
 		cout << FileInfo[presentdir].day << "  " << FileInfo[presentdir].tim << "    " << "<DIR>          .\n";
@@ -166,14 +166,14 @@ void dir()
 
 		}
 	}
-	cout << "              " << filenum << " ¸öÎÄ¼ş";
+	cout << "              " << filenum << " ä¸ªæ–‡ä»¶";
 	cout.width(15);
 	cout << FileInfo.size() * 57 + FileDB.size() * 256;
-	cout << " ×Ö½Ú" << endl;
-	cout << "              " << dirnum << " ¸öÄ¿Â¼";
+	cout << " å­—èŠ‚" << endl;
+	cout << "              " << dirnum << " ä¸ªç›®å½•";
 	cout.width(15);
 	cout << 15048 - FileInfo.size() * 57 - FileDB.size() * 256;
-	cout << " ¿ÉÓÃ×Ö½Ú" << endl;
+	cout << " å¯ç”¨å­—èŠ‚" << endl;
 }
 
 void cd(string s)
@@ -181,16 +181,16 @@ void cd(string s)
 	int flag;
 	flag = 0;
 	int sig = s.find_first_of("\\");
-	if (sig == -1)//½øÈëµ±Ç°Ä¿Â¼ÏÂÄ¿Â¼
+	if (sig == -1)//è¿›å…¥å½“å‰ç›®å½•ä¸‹ç›®å½•
 	{
-		if (s == "..")//ÕÒµ½×îºóÒ»¸ö\µÄÏÂ±ê£¬É¾³ı\¼°Ö®ºóµÄ×Ö·û´®£¬µ±È»presentdirÒ²Òª¸Ä
+		if (s == "..")//æ‰¾åˆ°æœ€åä¸€ä¸ª\çš„ä¸‹æ ‡ï¼Œåˆ é™¤\åŠä¹‹åçš„å­—ç¬¦ä¸²ï¼Œå½“ç„¶presentdirä¹Ÿè¦æ”¹
 		{
 			int pos;
 			if (presentdir == -1)
 				return;
 			else
 			{
-				pos = path.find_last_of('\\');//·µ»ØÏÂ±ê
+				pos = path.find_last_of('\\');//è¿”å›ä¸‹æ ‡
 				if (pos == 0)
 					path.erase(pos + 1);
 				else
@@ -219,13 +219,13 @@ void cd(string s)
 	}
 	else
 	{
-		//Ô½¼¶·ÃÎÊ
+		//è¶Šçº§è®¿é—®
 		stringstream ss;
 		string tok;
-		vector<string> dirr;//¶¯Ì¬
+		vector<string> dirr;//åŠ¨æ€
 		int j = 0;
-		ss.str(s);//³õÊ¼»¯
-		while (getline(ss, tok, '\\'))//·Ö´Ê
+		ss.str(s);//åˆå§‹åŒ–
+		while (getline(ss, tok, '\\'))//åˆ†è¯
 		{
 			dirr.push_back(tok);
 			j++;
@@ -254,7 +254,7 @@ void cd(string s)
 		}
 	}
 	if (flag == 0)
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÂ·¾¶¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„è·¯å¾„ã€‚" << endl << endl;
 }
 
 void mkdir(string s)
@@ -263,15 +263,15 @@ void mkdir(string s)
 	{
 		if (FileInfo[i].filename == s &&FileInfo[i].parent == presentdir)
 		{
-			cout << "×ÓÄ¿Â¼»òÎÄ¼ş " << s << "ÒÑ¾­´æÔÚ¡£" << endl << endl;
+			cout << "å­ç›®å½•æˆ–æ–‡ä»¶ " << s << "å·²ç»å­˜åœ¨ã€‚" << endl << endl;
 			return;
 		}
 	}
 	time_t t = time(NULL);
 	char ch1[20] = { 0 };
 	char ch2[20] = { 0 };
-	strftime(ch1, sizeof(ch1) - 1, "%Y/%m/%d", localtime(&t));     //Äê/ÔÂ/ÈÕ
-	strftime(ch2, sizeof(ch2) - 1, "%H:%M", localtime(&t));//Ê±:·Ö
+	strftime(ch1, sizeof(ch1) - 1, "%Y/%m/%d", localtime(&t));     //å¹´/æœˆ/æ—¥
+	strftime(ch2, sizeof(ch2) - 1, "%H:%M", localtime(&t));//æ—¶:åˆ†
 	strcpy(FileInput.filename, s.c_str());
 	FileInput.parent = presentdir;
 	FileInput.mode = 2;
@@ -289,11 +289,11 @@ void rmdir(string s)
 	{
 		if (FileInfo[i].filename == s && FileInfo[i].parent == presentdir && FileInfo[i].type == 0)
 		{
-			FileInfo.erase(FileInfo.begin() + i);//a.erase(a.begin()+2);É¾³ıµÚÈı¸öÔªËØ
+			FileInfo.erase(FileInfo.begin() + i);//a.erase(a.begin()+2);åˆ é™¤ç¬¬ä¸‰ä¸ªå…ƒç´ 
 			return;
 		}
 	}
-	cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş¡£\n»òÄ¿Â¼Ãû³ÆÎŞĞ§¡£" << endl << endl;
+	cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶ã€‚\næˆ–ç›®å½•åç§°æ— æ•ˆã€‚" << endl << endl;
 }
 
 void del(string s)
@@ -302,7 +302,7 @@ void del(string s)
 	{
 		if (FileInfo[i].filename == s && FileInfo[i].parent == presentdir && FileInfo[i].type == 1)
 		{
-			FileDB.erase(FileDB.begin() + FileInfo[i].addr);//ÏÈÉ¾Êı¾İ
+			FileDB.erase(FileDB.begin() + FileInfo[i].addr);//å…ˆåˆ æ•°æ®
 			FileInfo.erase(FileInfo.begin() + i);
 			return;
 		}
@@ -312,7 +312,7 @@ void del(string s)
 				path.append("\\");
 			while (1)
 			{
-				cout << "XZL:" << path << s << "\\*, ÊÇ·ñÈ·ÈÏ(Y/N)?";
+				cout << "XZL:" << path << s << "\\*, æ˜¯å¦ç¡®è®¤(Y/N)?";
 				char ch;
 				ch = getchar();
 				//cin.clear();
@@ -343,7 +343,7 @@ void del(string s)
 	}
 	if (presentdir != -1)
 		path.append("\\");
-	cout << "ÕÒ²»µ½ XZL:" << path << s << endl << endl;
+	cout << "æ‰¾ä¸åˆ° XZL:" << path << s << endl << endl;
 }
 
 void find(string s, string f)
@@ -356,12 +356,12 @@ void find(string s, string f)
 			flag = 1;
 			string ss;
 			int j = FileInfo[i].addr;
-			while (j != -1)//ÕÒÈ«ÎÄ¼şÖĞµÄ×Ö·û´®
+			while (j != -1)//æ‰¾å…¨æ–‡ä»¶ä¸­çš„å­—ç¬¦ä¸²
 			{
 				ss += FileDB[j].data;
 				j = FileDB[j].next_num;
 			}
-			int start = ss.find_first_of(s, 0);//·µ»ØµÚÒ»´ÎÆ¥Åä½á¹û
+			int start = ss.find_first_of(s, 0);//è¿”å›ç¬¬ä¸€æ¬¡åŒ¹é…ç»“æœ
 			cout << endl << "---------- " << f << endl;
 			if (start == -1)
 				return;
@@ -376,7 +376,7 @@ void find(string s, string f)
 		}
 	}
 	if (flag == 0)
-		cout << "ÕÒ²»µ½ÎÄ¼ş -" << f << endl << endl;
+		cout << "æ‰¾ä¸åˆ°æ–‡ä»¶ -" << f << endl << endl;
 }
 
 void show(string s)
@@ -389,11 +389,11 @@ void show(string s)
 			flag = 1;
 			if (FileInfo[i].mode == 1)
 			{
-				cout << "¸ÃÎÄ¼şÎªÖ»Ğ´ÎÄ¼ş£¬²»¿É¶Á¡£" << endl << endl;
+				cout << "è¯¥æ–‡ä»¶ä¸ºåªå†™æ–‡ä»¶ï¼Œä¸å¯è¯»ã€‚" << endl << endl;
 				return;
 			}
 			int j = FileInfo[i].addr;
-			while (j != -1)//ÕÒÈ«ÎÄ¼şÖĞµÄ×Ö·û´®
+			while (j != -1)//æ‰¾å…¨æ–‡ä»¶ä¸­çš„å­—ç¬¦ä¸²
 			{
 				cout << FileDB[j].data << endl;
 				j = FileDB[j].next_num;
@@ -404,7 +404,7 @@ void show(string s)
 		}
 	}
 	if (flag == 0)
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶ã€‚" << endl << endl;
 }
 
 void rename(string org, string neww)
@@ -412,14 +412,14 @@ void rename(string org, string neww)
 	int flag = 0;
 	for (int i = 0; i < FileInfo.size(); i++)
 	{
-		if (FileInfo[i].filename == org && FileInfo[i].parent == presentdir)//¿ÉÒÔ¸ÄÎÄ¼şÃûÒ²¿ÉÒÔ¸ÄÄ¿Â¼Ãû
+		if (FileInfo[i].filename == org && FileInfo[i].parent == presentdir)//å¯ä»¥æ”¹æ–‡ä»¶åä¹Ÿå¯ä»¥æ”¹ç›®å½•å
 		{
 			flag = 1;
 			for (int j = 0; j < FileInfo.size(); j++)
 			{
 				if (FileInfo[j].filename == neww&&FileInfo[j].parent == presentdir)
 				{
-					cout << "´æÔÚÒ»¸öÖØÃûÎÄ¼ş¡£" << endl << endl;
+					cout << "å­˜åœ¨ä¸€ä¸ªé‡åæ–‡ä»¶ã€‚" << endl << endl;
 					return;
 				}
 
@@ -430,7 +430,7 @@ void rename(string org, string neww)
 		}
 	}
 	if (flag == 0)
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶ã€‚" << endl << endl;
 }
 
 void echo(string s)
@@ -440,15 +440,15 @@ void echo(string s)
 	string con[2];
 	int j = 0;
 	int address = 0;
-	ss.str(s);//³õÊ¼»¯
-	if (s.find_first_of(">") != -1)//ÏÈ·Ö´Ê£¬ÔÙ¿¼ÂÇÊÇ¸²¸ÇĞ´»¹ÊÇ×·¼ÓĞ´
+	ss.str(s);//åˆå§‹åŒ–
+	if (s.find_first_of(">") != -1)//å…ˆåˆ†è¯ï¼Œå†è€ƒè™‘æ˜¯è¦†ç›–å†™è¿˜æ˜¯è¿½åŠ å†™
 	{
 		if (s.find_first_of(">") == s.find_last_of(">"))
 		{
 			while (getline(ss, tok, '>'))
 			{
 				con[j] = tok;
-				//cout << tok << endl;//²âÊÔÓÃ
+				//cout << tok << endl;//æµ‹è¯•ç”¨
 				j++;
 			}
 		}
@@ -465,24 +465,24 @@ void echo(string s)
 			}
 		}
 
-		int flag = 0;//µ±Ç°Ä¿Â¼ÏÂÓĞÕâ¸öÎÄ¼şÂğ
+		int flag = 0;//å½“å‰ç›®å½•ä¸‹æœ‰è¿™ä¸ªæ–‡ä»¶å—
 		int i;
 		for (i = 0; i < FileInfo.size(); i++)
 		{
 			if (FileInfo[i].filename == con[1] && FileInfo[i].parent == presentdir&&FileInfo[i].type == 1)
 			{
-				flag = 1;//ÒÑ´æÔÚ
-				break;//°ÑÏÂ±êiÌá³öÀ´
+				flag = 1;//å·²å­˜åœ¨
+				break;//æŠŠä¸‹æ ‡iæå‡ºæ¥
 			}
 		}
-		//ÏÈÅĞ¶ÏÊÇ·ñÎª×·¼ÓĞ´
-		if (s.find_first_of(">") == s.find_last_of(">"))//¸²¸ÇĞ´
+		//å…ˆåˆ¤æ–­æ˜¯å¦ä¸ºè¿½åŠ å†™
+		if (s.find_first_of(">") == s.find_last_of(">"))//è¦†ç›–å†™
 		{
 			if (flag == 1)
 			{
 				if (FileInfo[i].mode == 0)
 				{
-					cout << "¸ÃÎÄ¼şÎªÖ»¶ÁÎÄ¼ş£¬²»¿ÉĞ´¡£" << endl << endl;
+					cout << "è¯¥æ–‡ä»¶ä¸ºåªè¯»æ–‡ä»¶ï¼Œä¸å¯å†™ã€‚" << endl << endl;
 					return;
 				}
 				FileInfo[i].length = con[0].size();
@@ -492,17 +492,17 @@ void echo(string s)
 					strcpy(FileDB[FileInfo[i].addr].data, con[0].c_str());
 					FileDB[FileInfo[i].addr].is_data = 1;
 				}
-				else //strcpyÊÇ²»ÄÜÊµÏÖµÄ
+				else //strcpyæ˜¯ä¸èƒ½å®ç°çš„
 				{
 					int chsize = 0;
-					int k = 1;//±¶Êı
+					int k = 1;//å€æ•°
 					FileDB[FileInfo[i].addr].next_num = FileDB.size();
 					strncpy(FileDB[FileInfo[i].addr].data, con[0].c_str(), 256);
 					FileDB[FileInfo[i].addr].is_data = 1;
 					chsize = 256;
 					while (con[0].size() - chsize > 256)
 					{
-						strncpy(DBInput.data, con[0].c_str() + 256 * k, 256);//ÓÃstrncpy£¬¿ÉÄÜ»áÓĞµãÎ£ÏÕ
+						strncpy(DBInput.data, con[0].c_str() + 256 * k, 256);//ç”¨strncpyï¼Œå¯èƒ½ä¼šæœ‰ç‚¹å±é™©
 						DBInput.next_num = FileDB.size() + 1;
 						DBInput.is_data = 1;
 						FileDB.push_back(DBInput);
@@ -515,7 +515,7 @@ void echo(string s)
 					FileDB.push_back(DBInput);
 				}
 			}
-			else  //ÎÄ¼ş²»´æÔÚ
+			else  //æ–‡ä»¶ä¸å­˜åœ¨
 			{
 				address = FileDB.size();
 				if (con[0].size() <= 256)
@@ -528,7 +528,7 @@ void echo(string s)
 				else
 				{
 					int chsize = 0;
-					int k = 1;//±¶Êı
+					int k = 1;//å€æ•°
 					DBInput.next_num = FileDB.size();
 					strncpy(DBInput.data, con[0].c_str(), 256);
 					DBInput.is_data = 1;
@@ -551,7 +551,7 @@ void echo(string s)
 				}
 			}
 		}
-		else  //×·¼ÓĞ´
+		else  //è¿½åŠ å†™
 		{
 			if (flag == 1)
 			{
@@ -563,7 +563,7 @@ void echo(string s)
 					iii = FileDB[ii].next_num;
 					if (iii != -1)
 						ii = iii;
-				}  //Ìø³öÑ­»·Ê±iii=-1
+				}  //è·³å‡ºå¾ªç¯æ—¶iii=-1
 				if (con[0].size() <= 256)
 				{
 					FileDB[ii].next_num = FileDB.size();
@@ -572,17 +572,17 @@ void echo(string s)
 					DBInput.is_data = 1;
 					FileDB.push_back(DBInput);
 				}
-				else //strcpyÊÇ²»ÄÜÊµÏÖµÄ
+				else //strcpyæ˜¯ä¸èƒ½å®ç°çš„
 				{
 					int chsize = 0;
-					int k = 1;//±¶Êı
+					int k = 1;//å€æ•°
 					FileDB[FileInfo[ii].addr].next_num = FileDB.size();
 					strncpy(FileDB[FileInfo[ii].addr].data, con[0].c_str(), 256);
 					FileDB[FileInfo[ii].addr].is_data = 1;
 					chsize = 256;
 					while (con[0].size() - chsize > 256)
 					{
-						strncpy(DBInput.data, con[0].c_str() + 256 * k, 256);//ÓÃstrncpy
+						strncpy(DBInput.data, con[0].c_str() + 256 * k, 256);//ç”¨strncpy
 						DBInput.next_num = FileDB.size() + 1;
 						DBInput.is_data = 1;
 						FileDB.push_back(DBInput);
@@ -595,7 +595,7 @@ void echo(string s)
 					FileDB.push_back(DBInput);
 				}
 			}
-			else  //ÎÄ¼ş²»´æÔÚ
+			else  //æ–‡ä»¶ä¸å­˜åœ¨
 			{
 				address = FileDB.size();
 				if (con[0].size() <= 256)
@@ -608,7 +608,7 @@ void echo(string s)
 				else
 				{
 					int chsize = 0;
-					int k = 1;//±¶Êı
+					int k = 1;//å€æ•°
 					DBInput.next_num = FileDB.size();
 					strncpy(DBInput.data, con[0].c_str(), 256);
 					DBInput.is_data = 1;
@@ -632,14 +632,14 @@ void echo(string s)
 			}
 		}
 
-		if (flag == 0)//²»´æÔÚ£¬ĞÂ½¨Ò»¸ö
+		if (flag == 0)//ä¸å­˜åœ¨ï¼Œæ–°å»ºä¸€ä¸ª
 		{
 			time_t t = time(NULL);
 			char ch1[20] = { 0 };
 			char ch2[20] = { 0 };
-			strftime(ch1, sizeof(ch1) - 1, "%Y/%m/%d", localtime(&t));     //Äê/ÔÂ/ÈÕ
-			strftime(ch2, sizeof(ch2) - 1, "%H:%M", localtime(&t));//Ê±:·Ö
-			//µØÖ·³¤¶ÈÊÇ×îÖØÒªµÄ
+			strftime(ch1, sizeof(ch1) - 1, "%Y/%m/%d", localtime(&t));     //å¹´/æœˆ/æ—¥
+			strftime(ch2, sizeof(ch2) - 1, "%H:%M", localtime(&t));//æ—¶:åˆ†
+			//åœ°å€é•¿åº¦æ˜¯æœ€é‡è¦çš„
 			strcpy(FileInput.filename, con[1].c_str());
 			FileInput.type = 1;
 			FileInput.length = con[0].size();
@@ -652,7 +652,7 @@ void echo(string s)
 		}
 	}
 	else
-		cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+		cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 }
 
 void import(string p)
@@ -660,15 +660,15 @@ void import(string p)
 	FILE *fd;
 	if ((fd = fopen(p.c_str(), "r")) == NULL)
 	{
-		cout << "±¾µØÎÄ¼şµ¼ÈëÊ§°Ü£¡" << endl;
+		cout << "æœ¬åœ°æ–‡ä»¶å¯¼å…¥å¤±è´¥ï¼" << endl;
 		return;
 	}
 	stringstream ss;
 	string tok;
-	vector<string> dirr;//¶¯Ì¬
+	vector<string> dirr;//åŠ¨æ€
 	int j = 0;
-	ss.str(p);//³õÊ¼»¯
-	while (getline(ss, tok, '\\'))//·Ö´Ê
+	ss.str(p);//åˆå§‹åŒ–
+	while (getline(ss, tok, '\\'))//åˆ†è¯
 	{
 		dirr.push_back(tok);
 		j++;
@@ -676,9 +676,9 @@ void import(string p)
 
 	for (int i = 0; i < FileInfo.size(); i++)
 	{
-		if (FileInfo[i].filename == dirr[j - 1] && FileInfo[i].parent == presentdir)//·ÀÖ¹ÖØÃû
+		if (FileInfo[i].filename == dirr[j - 1] && FileInfo[i].parent == presentdir)//é˜²æ­¢é‡å
 		{
-			cout << "´æÔÚÒ»¸öÖØÃûÎÄ¼ş¡£" << endl << endl;
+			cout << "å­˜åœ¨ä¸€ä¸ªé‡åæ–‡ä»¶ã€‚" << endl << endl;
 			return;
 		}
 	}
@@ -686,8 +686,8 @@ void import(string p)
 	time_t t = time(NULL);
 	char ch1[20] = { 0 };
 	char ch2[20] = { 0 };
-	strftime(ch1, sizeof(ch1) - 1, "%Y/%m/%d", localtime(&t));     //Äê/ÔÂ/ÈÕ
-	strftime(ch2, sizeof(ch2) - 1, "%H:%M", localtime(&t));//Ê±:·Ö
+	strftime(ch1, sizeof(ch1) - 1, "%Y/%m/%d", localtime(&t));     //å¹´/æœˆ/æ—¥
+	strftime(ch2, sizeof(ch2) - 1, "%H:%M", localtime(&t));//æ—¶:åˆ†
 	strcpy(FileInput.filename, dirr[j - 1].c_str());
 	FileInput.type = 1;
 	FileInput.addr = FileDB.size();
@@ -725,16 +725,16 @@ void my_export(string s, string p)
 			flag = 1;
 			string ss;
 			int j = FileInfo[i].addr;
-			while (j != -1)//ÕÒÈ«ÎÄ¼şÖĞµÄ×Ö·û´®
+			while (j != -1)//æ‰¾å…¨æ–‡ä»¶ä¸­çš„å­—ç¬¦ä¸²
 			{
 				ss += FileDB[j].data;
 				j = FileDB[j].next_num;
 			}
-			p += s;//Æ´½ÓÂ·¾¶
+			p += s;//æ‹¼æ¥è·¯å¾„
 			FILE* fd;
 			if ((fd = fopen(p.c_str(), "w")) == NULL)
 			{
-				cout << "µ¼³öÊ§°Ü£¡" << endl;
+				cout << "å¯¼å‡ºå¤±è´¥ï¼" << endl;
 				return;
 			}
 			if (ss[0] == ' ')
@@ -744,7 +744,7 @@ void my_export(string s, string p)
 		}
 	}
 	if (flag == 0)
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶ã€‚" << endl << endl;
 }
 
 void move(string org, string neww)
@@ -753,15 +753,15 @@ void move(string org, string neww)
 	flag1 = flag2 = 0;
 	stringstream ss;
 	string tok;
-	vector<string> dirr;//¶¯Ì¬
+	vector<string> dirr;//åŠ¨æ€
 	int j = 0;
-	int fina;//×îÖÕ¸¸Ä¿Â¼
-	int begi;//ÒªÒÆ¶¯µÄÏÂ±ê
-	ss.str(neww);//³õÊ¼»¯
-	while (getline(ss, tok, '\\'))//·Ö´Ê
+	int fina;//æœ€ç»ˆçˆ¶ç›®å½•
+	int begi;//è¦ç§»åŠ¨çš„ä¸‹æ ‡
+	ss.str(neww);//åˆå§‹åŒ–
+	while (getline(ss, tok, '\\'))//åˆ†è¯
 	{
 		dirr.push_back(tok);
-		//cout << tok << endl;//²âÊÔÓÃ
+		//cout << tok << endl;//æµ‹è¯•ç”¨
 		j++;
 	}
 	if (dirr[j - 1] == ".")
@@ -788,7 +788,7 @@ void move(string org, string neww)
 	
 
 	int sig = org.find_first_of("\\");
-	if (sig == -1)//ÒªÒÆ¶¯µÄ²»ÊÇÂ·¾¶Ãû
+	if (sig == -1)//è¦ç§»åŠ¨çš„ä¸æ˜¯è·¯å¾„å
 	{
 		for (int i = 0; i < FileInfo.size(); i++)
 		{
@@ -803,13 +803,13 @@ void move(string org, string neww)
 	{
 		stringstream sss;
 		string tokk;
-		vector<string> dirrr;//¶¯Ì¬
+		vector<string> dirrr;//åŠ¨æ€
 		int j = 0;
-		sss.str(org);//³õÊ¼»¯
-		while (getline(sss, tokk, '\\'))//·Ö´Ê
+		sss.str(org);//åˆå§‹åŒ–
+		while (getline(sss, tokk, '\\'))//åˆ†è¯
 		{
 			dirr.push_back(tokk);
-			//cout << tokk << endl;//²âÊÔÓÃ
+			//cout << tokk << endl;//æµ‹è¯•ç”¨
 			j++;
 		}
 		for (int k = 0; k < j; k++)
@@ -827,12 +827,12 @@ void move(string org, string neww)
 		}
 	}
 
-	if (flag1 == 1 && flag2 == 1)//Á½ÕßÂ·¾¶ÕıÈ·
+	if (flag1 == 1 && flag2 == 1)//ä¸¤è€…è·¯å¾„æ­£ç¡®
 	{
 		FileInfo[begi].parent = fina;
 	}
 	else
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÂ·¾¶¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„è·¯å¾„ã€‚" << endl << endl;
 }
 
 void attrib(string t, string s)
@@ -843,8 +843,8 @@ void attrib(string t, string s)
 	string tok;
 	vector<string> dirr;
 	int j = 0;
-	ss.str(s);//³õÊ¼»¯
-	while (getline(ss, tok, '\\'))//·Ö´Ê
+	ss.str(s);//åˆå§‹åŒ–
+	while (getline(ss, tok, '\\'))//åˆ†è¯
 	{
 		dirr.push_back(tok);
 		j++;
@@ -872,7 +872,7 @@ void attrib(string t, string s)
 			FileInfo[i].mode = 2;
 	}
 	else
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶ã€‚" << endl << endl;
 }
 
 void copy(string f, string p)
@@ -885,11 +885,11 @@ void copy(string f, string p)
 	string tok;
 	vector<string> dirr;
 	int j = 0;
-	ss.str(p);//³õÊ¼»¯
-	while (getline(ss, tok, '\\'))//·Ö´Ê
+	ss.str(p);//åˆå§‹åŒ–
+	while (getline(ss, tok, '\\'))//åˆ†è¯
 	{
 		dirr.push_back(tok);
-		//cout << tok << endl;//²âÊÔÓÃ
+		//cout << tok << endl;//æµ‹è¯•ç”¨
 		j++;
 	}
 	if (dirr[j-1] == ".")
@@ -941,7 +941,7 @@ void copy(string f, string p)
 						DBInput.next_num = -1;
 					FileDB.push_back(DBInput);
 
-				}  //Ìø³öÑ­»·Ê±iii=-1
+				}  //è·³å‡ºå¾ªç¯æ—¶iii=-1
 				FileInfo.push_back(FileInput);
 				cout << endl << endl;
 				return;
@@ -950,10 +950,10 @@ void copy(string f, string p)
 	}
 
 	if (flag1 == 0 || flag2 == 0)
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş»òÂ·¾¶¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶æˆ–è·¯å¾„ã€‚" << endl << endl;
 }
 
-void copy2(int i, int par)//ÎÄ¼ş¸´ÖÆ
+void copy2(int i, int par)//æ–‡ä»¶å¤åˆ¶
 {
 	strcpy(FileInput.filename, FileInfo[i].filename);
 	FileInput.length = FileInfo[i].length;
@@ -976,11 +976,11 @@ void copy2(int i, int par)//ÎÄ¼ş¸´ÖÆ
 			DBInput.next_num = -1;
 		FileDB.push_back(DBInput);
 
-	}  //Ìø³öÑ­»·Ê±iii=-1
+	}  //è·³å‡ºå¾ªç¯æ—¶iii=-1
 	FileInfo.push_back(FileInput);
 	cout << endl << endl;
 }
-void copy3(int i,int par)//Ä¿Â¼¸´ÖÆ
+void copy3(int i,int par)//ç›®å½•å¤åˆ¶
 {
 	strcpy(FileInput.filename, FileInfo[i].filename);
 	FileInput.length = -1;
@@ -993,7 +993,7 @@ void copy3(int i,int par)//Ä¿Â¼¸´ÖÆ
 	FileInfo.push_back(FileInput);
 }
 
-void copy4(int i,int par)//µİ¹é
+void copy4(int i,int par)//é€’å½’
 {
 	if (FileInfo[i].type == 1)
 		copy2(i,par);
@@ -1029,8 +1029,8 @@ void xcopy(string f, string p)
 	string tok;
 	vector<string> dirr;
 	int j = 0;
-	ss.str(p);//³õÊ¼»¯
-	while (getline(ss, tok, '\\'))//·Ö´Ê
+	ss.str(p);//åˆå§‹åŒ–
+	while (getline(ss, tok, '\\'))//åˆ†è¯
 	{
 		dirr.push_back(tok);
 		j++;
@@ -1060,7 +1060,7 @@ void xcopy(string f, string p)
 	{
 		for (int i = 0; i < FileInfo.size(); i++)
 		{
-			if (FileInfo[i].filename == f && FileInfo[i].type == 0)//¸´ÖÆÄ¿Â¼Ê÷
+			if (FileInfo[i].filename == f && FileInfo[i].type == 0)//å¤åˆ¶ç›®å½•æ ‘
 			{
 				
 				flag2 = 1;
@@ -1071,39 +1071,39 @@ void xcopy(string f, string p)
 	}
 
 	if (flag1 == 0 || flag2 == 0)
-		cout << "ÏµÍ³ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş»òÂ·¾¶¡£" << endl << endl;
+		cout << "ç³»ç»Ÿæ‰¾ä¸åˆ°æŒ‡å®šçš„æ–‡ä»¶æˆ–è·¯å¾„ã€‚" << endl << endl;
 }
 
 int main()
 {
 	SetWindowTextA(GetConsoleWindow(), "XZL CMD.exe");
 	int i;
-	cout << "XZL COMMAND [°æ±¾ 2.0.1]";
+	cout << "XZL COMMAND [ç‰ˆæœ¬ 2.0.1]";
 	cout << endl;
 	cout << "XZL:" << path << ">";
 	string strr;
 	string cl[4];//command line
 	string tok;
 	stringstream str;
-	getline(cin, strr);//²»ÄÜÖ±½ÓÓÃcin
+	getline(cin, strr);//ä¸èƒ½ç›´æ¥ç”¨cin
 	while (strr != "exit")
 	{
 		str.str(strr);
 		i = 0;
-		while (getline(str, tok, ' '))//°´¿Õ¸ñ·Ö´Ê
+		while (getline(str, tok, ' '))//æŒ‰ç©ºæ ¼åˆ†è¯
 		{
 			cl[i] = tok;
 			//cout << tok << endl;
 			i++;
 		}
-		if (cl[0] == "dir")//Õâ¸ö²»ĞèÒªÔÙ×ö·Ö´ÊÁË£¬ÒÑ¾­»ñµÃpresentdir
+		if (cl[0] == "dir")//è¿™ä¸ªä¸éœ€è¦å†åšåˆ†è¯äº†ï¼Œå·²ç»è·å¾—presentdir
 		{
 			initFiletoRom();
 			dir();
 			cout << endl << endl;
 			out_to_file();
 		}
-		else if (cl[0] == "cd")//Ô½¼¶·ÃÎÊ
+		else if (cl[0] == "cd")//è¶Šçº§è®¿é—®
 		{
 			if (cl[1] != "")
 			{
@@ -1124,9 +1124,9 @@ int main()
 				out_to_file();
 			}
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 		}
-		else if (cl[0] == "rmdir")  //        ¡¾¡¾¡¾¡¾¡¾Ê¼ÖÕÒª¼ÇµÃÕÒÎÄ¼şÃûµÄÊ±ºòÍ¬Ê±»¹Òª±È½Ïµ±Ç°Ä¿Â¼¡¿¡¿¡¿¡¿¡¿¡¿¡¿¡¿
+		else if (cl[0] == "rmdir")  //        ã€ã€ã€ã€ã€å§‹ç»ˆè¦è®°å¾—æ‰¾æ–‡ä»¶åçš„æ—¶å€™åŒæ—¶è¿˜è¦æ¯”è¾ƒå½“å‰ç›®å½•ã€‘ã€‘ã€‘ã€‘ã€‘ã€‘ã€‘ã€‘
 		{
 			if (cl[1] != "")
 			{
@@ -1136,7 +1136,7 @@ int main()
 			}
 				
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 		}
 		else if (cl[0] == "del")
 		{
@@ -1144,7 +1144,7 @@ int main()
 			if (cl[1] != "")
 				del(cl[1]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "find")
@@ -1153,11 +1153,11 @@ int main()
 			if (cl[1] != "" && cl[2] != "")
 				find(cl[1], cl[2]);
 			else
-				cout << "FIND: ²ÎÊı¸ñÊ½²»ÕıÈ·" << endl << endl;
+				cout << "FIND: å‚æ•°æ ¼å¼ä¸æ­£ç¡®" << endl << endl;
 			out_to_file();
 
 		}
-		else if (cl[0] == "cls")//Õâ¸ö²»µ¥¶ÀĞ´º¯ÊıÁË
+		else if (cl[0] == "cls")//è¿™ä¸ªä¸å•ç‹¬å†™å‡½æ•°äº†
 		{
 			system("cls");
 		}
@@ -1165,15 +1165,15 @@ int main()
 		{
 			time_t t = time(NULL);
 			char ch[64] = { 0 };
-			strftime(ch, sizeof(ch) - 1, "%Y/%m/%d %A", localtime(&t));     //Äê/ÔÂ/ÈÕ ÖÜ¼¸
-			cout << "µ±Ç°ÈÕÆÚ: " << ch << endl << endl;
+			strftime(ch, sizeof(ch) - 1, "%Y/%m/%d %A", localtime(&t));     //å¹´/æœˆ/æ—¥ å‘¨å‡ 
+			cout << "å½“å‰æ—¥æœŸ: " << ch << endl << endl;
 		}
 		else if (cl[0] == "time")
 		{
 			time_t t = time(NULL);
 			char ch[64] = { 0 };
-			strftime(ch, sizeof(ch) - 1, "%T", localtime(&t));     //Ê±/·Ö/Ãë/·ÖÃë
-			cout << "µ±Ç°Ê±¼ä: " << ch << endl << endl;
+			strftime(ch, sizeof(ch) - 1, "%T", localtime(&t));     //æ—¶/åˆ†/ç§’/åˆ†ç§’
+			cout << "å½“å‰æ—¶é—´: " << ch << endl << endl;
 		}
 		else if (cl[0] == "format")
 		{
@@ -1192,7 +1192,7 @@ int main()
 				cout << endl << endl;
 			}
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "move")
@@ -1204,7 +1204,7 @@ int main()
 				cout << endl << endl;
 			}
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "import")
@@ -1213,7 +1213,7 @@ int main()
 			if (cl[1] != "")
 				import(cl[1]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "export")
@@ -1222,7 +1222,7 @@ int main()
 			if (cl[1] != "" && cl[2] != "")
 				my_export(cl[1], cl[2]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "copy")
@@ -1231,7 +1231,7 @@ int main()
 			if (cl[1] != "" && cl[2] != "")
 				copy(cl[1], cl[2]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "xcopy")
@@ -1240,7 +1240,7 @@ int main()
 			if (cl[1] != "" && cl[2] != "")
 				xcopy(cl[1], cl[2]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "type" || cl[0] == "more")
@@ -1249,7 +1249,7 @@ int main()
 			if (cl[1] != "")
 				show(cl[1]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "rename")
@@ -1258,7 +1258,7 @@ int main()
 			if (cl[1] != "" && cl[2] != "")
 				rename(cl[1], cl[2]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "attrib")
@@ -1267,7 +1267,7 @@ int main()
 			if (cl[1] != "" && cl[2] != "")
 				attrib(cl[1], cl[2]);
 			else
-				cout << "ÃüÁîÓï·¨²»ÕıÈ·¡£" << endl << endl;
+				cout << "å‘½ä»¤è¯­æ³•ä¸æ­£ç¡®ã€‚" << endl << endl;
 			out_to_file();
 		}
 		else if (cl[0] == "help" && cl[1] != "")
@@ -1286,32 +1286,32 @@ int main()
 		}
 		else if (cl[0] == "help"&& cl[1] == "")
 		{
-			cout << "ATTRIB         ÏÔÊ¾»ò¸ü¸ÄÎÄ¼şÊôĞÔ¡£" << endl;
-			cout << "CD             ½øÈëÄ¿Â¼»ò·µ»ØÉÏÒ»¼¶¡£" << endl;
-			cout << "CLS            Çå³ıÆÁÄ»¡£" << endl;
-			cout << "COPY           ½«Ò»¸öÎÄ¼ş¸´ÖÆµ½ÁíÒ»¸öÎ»ÖÃ¡£" << endl;
-			cout << "DATE           ÏÔÊ¾ÈÕÆÚ¡£" << endl;
-			cout << "DEL            É¾³ıÒ»¸öÎÄ¼ş»òÄ¿Â¼ÏÂËùÓĞÄÚÈİ¡£" << endl;
-			cout << "DIR            ÏÔÊ¾Ò»¸öÄ¿Â¼ÖĞµÄÎÄ¼şºÍ×ÓÄ¿Â¼¡£" << endl;
-			cout << "ECHO           ÏÔÊ¾ÏûÏ¢£¬»ò½«ÃüÁî»ØÏÔ´ò¿ª»ò¹Ø±Õ¡£" << endl;
-			cout << "EXIT           ÍË³ö XZL CMD.EXE ³ÌĞò(ÃüÁî½âÊÍ³ÌĞò)¡£" << endl;
-			cout << "EXPORT			½«µ±Ç°Ä¿Â¼ÏÂµÄÎÄ¼şµ¼³öµ½±¾µØ´ÅÅÌ¡£" << endl;
-			cout << "FIND           ÔÚÒ»¸öÎÄ¼şÖĞËÑË÷Ò»¸öÎÄ±¾×Ö·û´®¡£" << endl;
-			cout << "FORMAT         ¸ñÊ½»¯´ÅÅÌ¡£" << endl;
-			cout << "IMPORT			´Ó±¾µØ´ÅÅÌ¸´ÖÆÄÚÈİµ½µ±Ç°Ä¿Â¼¡£" << endl;
-			cout << "HELP           Ìá¹©ÃüÁîµÄ°ïÖúĞÅÏ¢¡£" << endl;
-			cout << "MKDIR          ´´½¨Ò»¸öÄ¿Â¼¡£" << endl;
-			cout << "MORE           ÖğÆÁÏÔÊ¾Êä³ö¡£" << endl;
-			cout << "MOVE           ½«Ò»¸öÎÄ¼ş´ÓÒ»¸öÄ¿Â¼ÒÆ¶¯µ½ÁíÒ»¸öÄ¿Â¼¡£" << endl;
-			cout << "RENAME         ÖØÃüÃûÎÄ¼ş»òÄ¿Â¼¡£" << endl;//Òª½ÓÊÜÁ½¸ö²ÎÊı
-			cout << "RMDIR          É¾³ıÄ¿Â¼¡£" << endl;
-			cout << "TIME           ÏÔÊ¾ÏµÍ³Ê±¼ä¡£" << endl;
-			cout << "TYPE           ÏÔÊ¾ÎÄ±¾ÎÄ¼şµÄÄÚÈİ¡£" << endl;
-			cout << "XCOPY          ¸´ÖÆÎÄ¼şºÍÄ¿Â¼Ê÷¡£" << endl;
+			cout << "ATTRIB         æ›´æ”¹æ–‡ä»¶å±æ€§ã€‚" << endl;
+			cout << "CD             è¿›å…¥ç›®å½•æˆ–è¿”å›ä¸Šä¸€çº§ã€‚" << endl;
+			cout << "CLS            æ¸…é™¤å±å¹•ã€‚" << endl;
+			cout << "COPY           å°†ä¸€ä¸ªæ–‡ä»¶å¤åˆ¶åˆ°å¦ä¸€ä¸ªä½ç½®ã€‚" << endl;
+			cout << "DATE           æ˜¾ç¤ºæ—¥æœŸã€‚" << endl;
+			cout << "DEL            åˆ é™¤ä¸€ä¸ªæ–‡ä»¶æˆ–ç›®å½•ä¸‹æ‰€æœ‰å†…å®¹ã€‚" << endl;
+			cout << "DIR            æ˜¾ç¤ºä¸€ä¸ªç›®å½•ä¸­çš„æ–‡ä»¶å’Œå­ç›®å½•ã€‚" << endl;
+			cout << "ECHO           æ˜¾ç¤ºæ¶ˆæ¯ï¼Œæˆ–å°†å‘½ä»¤å›æ˜¾æ‰“å¼€æˆ–å…³é—­ã€‚" << endl;
+			cout << "EXIT           é€€å‡º XZL CMD.EXE ç¨‹åº(å‘½ä»¤è§£é‡Šç¨‹åº)ã€‚" << endl;
+			cout << "EXPORT			å°†å½“å‰ç›®å½•ä¸‹çš„æ–‡ä»¶å¯¼å‡ºåˆ°æœ¬åœ°ç£ç›˜ã€‚" << endl;
+			cout << "FIND           åœ¨ä¸€ä¸ªæ–‡ä»¶ä¸­æœç´¢ä¸€ä¸ªæ–‡æœ¬å­—ç¬¦ä¸²ã€‚" << endl;
+			cout << "FORMAT         æ ¼å¼åŒ–ç£ç›˜ã€‚" << endl;
+			cout << "IMPORT			ä»æœ¬åœ°ç£ç›˜å¤åˆ¶å†…å®¹åˆ°å½“å‰ç›®å½•ã€‚" << endl;
+			cout << "HELP           æä¾›å‘½ä»¤çš„å¸®åŠ©ä¿¡æ¯ã€‚" << endl;
+			cout << "MKDIR          åˆ›å»ºä¸€ä¸ªç›®å½•ã€‚" << endl;
+			cout << "MORE           é€å±æ˜¾ç¤ºè¾“å‡ºã€‚" << endl;
+			cout << "MOVE           å°†ä¸€ä¸ªæ–‡ä»¶ä»ä¸€ä¸ªç›®å½•ç§»åŠ¨åˆ°å¦ä¸€ä¸ªç›®å½•ã€‚" << endl;
+			cout << "RENAME         é‡å‘½åæ–‡ä»¶æˆ–ç›®å½•ã€‚" << endl;//è¦æ¥å—ä¸¤ä¸ªå‚æ•°
+			cout << "RMDIR          åˆ é™¤ç›®å½•ã€‚" << endl;
+			cout << "TIME           æ˜¾ç¤ºç³»ç»Ÿæ—¶é—´ã€‚" << endl;
+			cout << "TYPE           æ˜¾ç¤ºæ–‡æœ¬æ–‡ä»¶çš„å†…å®¹ã€‚" << endl;
+			cout << "XCOPY          å¤åˆ¶æ–‡ä»¶å’Œç›®å½•æ ‘ã€‚" << endl;
 		}
 		else
 		{
-			cout << "'" << cl[0] << "' ²»ÊÇÄÚ²¿»òÍâ²¿ÃüÁî£¬Ò²²»ÊÇ¿ÉÔËĞĞµÄ³ÌĞò\n»òÅú´¦ÀíÎÄ¼ş¡£" << endl << endl;
+			cout << "'" << cl[0] << "' ä¸æ˜¯å†…éƒ¨æˆ–å¤–éƒ¨å‘½ä»¤ï¼Œä¹Ÿä¸æ˜¯å¯è¿è¡Œçš„ç¨‹åº\næˆ–æ‰¹å¤„ç†æ–‡ä»¶ã€‚" << endl << endl;
 		}
 
 		cout << "XZL:" << path << ">";
