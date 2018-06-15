@@ -771,15 +771,17 @@ void move(string org, string neww)
 	}
 	else
 	{
+		int re=-1;
 		for (int k = 0; k < j; k++)
 		{
 			flag1 = 0;
 			for (int i = 0; i < FileInfo.size(); i++)
 			{
-				if (FileInfo[i].filename == dirr[k] && FileInfo[i].type == 0)
+				if (FileInfo[i].filename == dirr[k] && FileInfo[i].type == 0 && FileInfo[i].parent==re)
 				{
 					flag1 = 1;
 					fina = i;
+					re = i;
 					break;
 				}
 			}
@@ -812,15 +814,17 @@ void move(string org, string neww)
 			//cout << tokk << endl;//测试用
 			j++;
 		}
+		int re = -1;
 		for (int k = 0; k < j; k++)
 		{
 			flag2 = 0;
 			for (int i = 0; i < FileInfo.size(); i++)
 			{
-				if (FileInfo[i].filename == dirr[k])
+				if (FileInfo[i].filename == dirr[k] && FileInfo[i].parent==re)
 				{
 					flag2 = 1;
 					begi = i;
+					re = i;
 					break;
 				}
 			}
@@ -837,26 +841,31 @@ void move(string org, string neww)
 
 void attrib(string t, string s)
 {
-	int flag, i;
+		int flag, i;
 	flag = 0;
 	stringstream ss;
 	string tok;
 	vector<string> dirr;
 	int j = 0;
-	ss.str(s);//初始化
+	if (s == "")
+		ss.str(t);//显示属性
+	else
+		ss.str(s);//初始化
 	while (getline(ss, tok, '\\'))//分词
 	{
 		dirr.push_back(tok);
 		j++;
 	}
+	int re = -1;
 	for (int k = 0; k < j; k++)
 	{
 		flag = 0;
 		for (i = 0; i < FileInfo.size(); i++)
 		{
-			if (FileInfo[i].filename == dirr[k])
+			if (FileInfo[i].filename == dirr[k]&& FileInfo[i].parent==re)
 			{
 				flag = 1;
+				re = i;
 				break;
 			}
 		}
@@ -864,12 +873,25 @@ void attrib(string t, string s)
 
 	if (flag == 1)
 	{
-		if (t == "r")
-			FileInfo[i].mode = 0;
-		else if (t == "w")
-			FileInfo[i].mode = 1;
-		else if (t == "rw" || t == "wr")
-			FileInfo[i].mode = 2;
+		if (s == "")
+		{
+			if (FileInfo[i].mode == 0)
+				cout << "Read Only";
+			if (FileInfo[i].mode == 1)
+				cout << "Write Only";
+			if (FileInfo[i].mode == 2)
+				cout << "Read & Write";
+		}
+		else
+		{
+			if (t == "r")
+				FileInfo[i].mode = 0;
+			else if (t == "w")
+				FileInfo[i].mode = 1;
+			else if (t == "rw" || t == "wr")
+				FileInfo[i].mode = 2;
+		}
+		cout << endl << endl;
 	}
 	else
 		cout << "系统找不到指定的文件。" << endl << endl;
@@ -899,15 +921,17 @@ void copy(string f, string p)
 	}
 	else
 	{
+		int re = -1;
 		for (int k = 0; k < j; k++)
 		{
 			flag1 = 0;
 			for (i = 0; i < FileInfo.size(); i++)
 			{
-				if (FileInfo[i].filename == dirr[k] && FileInfo[i].type == 0)
+				if (FileInfo[i].filename == dirr[k] && FileInfo[i].type == 0 && FileInfo[i].parent==re)
 				{
 					flag1 = 1;
 					par = i;
+					re = i;
 					break;
 				}
 			}
@@ -1042,15 +1066,17 @@ void xcopy(string f, string p)
 	}
 	else
 	{
+		int re = -1;
 		for (int k = 0; k < j; k++)
 		{
 			flag1 = 0;
 			for (i = 0; i < FileInfo.size(); i++)
 			{
-				if (FileInfo[i].filename == dirr[k] && FileInfo[i].type == 0)
+				if (FileInfo[i].filename == dirr[k] && FileInfo[i].type == 0 && FileInfo[i].parent==re)
 				{
 					flag1 = 1;
 					par = i;
+					re = i;
 					break;
 				}
 			}
