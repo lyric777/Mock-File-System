@@ -810,7 +810,7 @@ void move(string org, string neww)
 		sss.str(org);//初始化
 		while (getline(sss, tokk, '\\'))//分词
 		{
-			dirr.push_back(tokk);
+			dirrr.push_back(tokk);
 			//cout << tokk << endl;//测试用
 			j++;
 		}
