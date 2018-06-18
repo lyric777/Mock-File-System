@@ -820,7 +820,7 @@ void move(string org, string neww)
 			flag2 = 0;
 			for (int i = 0; i < FileInfo.size(); i++)
 			{
-				if (FileInfo[i].filename == dirr[k] && FileInfo[i].parent==re)
+				if (FileInfo[i].filename == dirrr[k] && FileInfo[i].parent==re)
 				{
 					flag2 = 1;
 					begi = i;
