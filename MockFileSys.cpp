@@ -941,7 +941,7 @@ void copy(string f, string p)
 	{
 		for (int i = 0; i < FileInfo.size(); i++)
 		{
-			if (FileInfo[i].filename == f && FileInfo[i].type == 1)
+			if (FileInfo[i].filename == f && FileInfo[i].type == 1&& FileInfo[i].parent == presentdir)
 			{
 				flag2 = 1;
 				strcpy(FileInput.filename, f.c_str());
@@ -1086,7 +1086,7 @@ void xcopy(string f, string p)
 	{
 		for (int i = 0; i < FileInfo.size(); i++)
 		{
-			if (FileInfo[i].filename == f && FileInfo[i].type == 0)//复制目录树
+			if (FileInfo[i].filename == f && FileInfo[i].type == 0&& FileInfo[i].parent == presentdir)//复制目录树
 			{
 				
 				flag2 = 1;
